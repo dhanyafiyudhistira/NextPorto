@@ -15,12 +15,15 @@ body {
   font-family: system-ui, sans-serif;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 2rem 1rem;
+  min-height: 100vh;
 }
 
 #root {
   width: 100%;
-  max-width: 600px;
+  max-width: 1280px;
+  min-height: 720px;
 }
 
 button,
