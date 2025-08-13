@@ -51,6 +51,7 @@ function App() {
 
   return (
     <div className="todo-app">
+      <h1 className="title">Todo</h1>
       <TaskInput onAdd={addTask} />
       <ul className="task-list">
         {filteredTasks.map(task => (

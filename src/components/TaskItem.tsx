@@ -61,7 +61,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: Props) 
           {task.title}
         </span>
       )}
-      <button onClick={onDelete} aria-label={`Delete ${task.title}`}>×</button>
+      <button className="delete-btn" onClick={onDelete} aria-label={`Delete ${task.title}`}>×</button>
     </li>
   )
 }

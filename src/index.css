@@ -3,6 +3,7 @@
   --fg: #111;
   --border: #ccc;
   --muted: #666;
+  --item-bg: #f7f7f7;
 }
 
 * { box-sizing: border-box; }
@@ -14,7 +15,7 @@ body {
   font-family: system-ui, sans-serif;
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 2rem 1rem;
 }
 
 #root {
@@ -37,6 +38,17 @@ input:focus {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.title {
+  text-align: center;
+  margin: 0 0 1rem 0;
+  font-size: 1.75rem;
 }
 
 .task-list {
@@ -49,8 +61,16 @@ input:focus {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--item-bg);
+  transition: background 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.task-item:hover {
+  background: #eee;
 }
 
 .task-item .title {
@@ -62,18 +82,75 @@ input:focus {
   color: var(--muted);
 }
 
+.task-item button.delete-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.task-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.task-item button.delete-btn:hover {
+  color: var(--fg);
+}
+
 .filters {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
+}
+
+.filters button {
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
 .filters button[aria-current='true'] {
-  font-weight: bold;
+  background: var(--fg);
+  color: var(--bg);
 }
 
 .stats {
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.stats button {
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.stats button:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.task-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.task-input::placeholder {
   color: var(--muted);
 }

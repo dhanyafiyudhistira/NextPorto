@@ -16,6 +16,7 @@ export default function TaskInput({ onAdd }: Props) {
 
   return (
     <input
+      className="task-input"
       aria-label="New task"
       placeholder="Add a task"
       value={value}
