@@ -1,0 +1,68 @@
+.heading {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.status {
+  margin: 0 0 1.5rem;
+  color: #475569;
+}
+
+.candidateList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.candidateItem {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+}
+
+.candidateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.voteCount {
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.voteForm {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.voteButton {
+  align-self: flex-start;
+  background-color: #1d4ed8;
+  color: #ffffff;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusMessage {
+  margin-top: 1rem;
+  color: #1d4ed8;
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  color: #dc2626;
+}

@@ -1,0 +1,12 @@
+.heading {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.empty {
+  padding: 1rem;
+  border: 1px dashed #cbd5f5;
+  background: #f1f5f9;
+  border-radius: 8px;
+  color: #64748b;
+}

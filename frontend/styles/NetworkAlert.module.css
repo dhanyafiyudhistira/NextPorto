@@ -1,0 +1,19 @@
+.switch {
+  margin-left: 1rem;
+  background: transparent;
+  border: 1px solid #7a5c00;
+  color: #7a5c00;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.switch:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.switch:not(:disabled):hover {
+  background: rgba(122, 92, 0, 0.1);
+}
