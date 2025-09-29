@@ -1,0 +1,83 @@
+.heading {
+  margin-top: 0;
+}
+
+.notice {
+  padding: 0.75rem 1rem;
+  background: #fff7f0;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  color: #9a6700;
+}
+
+.formSection {
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.field input,
+.field textarea {
+  padding: 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.candidateRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.button {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #2563eb;
+  border: 1px dashed #2563eb;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.status {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #1d4ed8;
+}
+
+.error {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #dc2626;
+}
