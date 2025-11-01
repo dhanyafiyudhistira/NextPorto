@@ -17,7 +17,7 @@ export interface PurchaseItem {
 interface PurchaseItemRowProps {
   item: PurchaseItem
   index: number
-  products: Array<{ id: string; sku: string; name: string; unit: string }>
+  products: Array<{ id: string; sku: string; name: string; unit: string; price: number; cost: number }>
   onChange: (index: number, item: PurchaseItem) => void
   onRemove: (index: number) => void
 }
@@ -32,10 +32,14 @@ export function PurchaseItemRow({
   const selectedProduct = products.find((p) => p.id === item.productId)
 
   const handleProductChange = (productId: string) => {
+    const product = products.find((p) => p.id === productId)
+    // Use product's cost if available, otherwise use price
+    const productCost = product ? (product.cost > 0 ? product.cost : product.price) : item.unitCost
     onChange(index, {
       ...item,
       productId,
-      subtotal: item.quantity * item.unitCost,
+      unitCost: productCost,
+      subtotal: item.quantity * productCost,
     })
   }
 

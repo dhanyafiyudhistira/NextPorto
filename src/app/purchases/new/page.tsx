@@ -22,6 +22,8 @@ interface Product {
   sku: string
   name: string
   unit: string
+  price: number
+  cost: number
 }
 
 export default function NewPurchasePage() {
@@ -62,7 +64,15 @@ export default function NewPurchasePage() {
       const res = await fetch('/api/products')
       if (res.ok) {
         const data = await res.json()
-        setProducts(data.filter((p: any) => p.isActive))
+        setProducts(
+          data
+            .filter((p: any) => p.isActive)
+            .map((p: any) => ({
+              ...p,
+              price: Number(p.price),
+              cost: Number(p.cost),
+            }))
+        )
       }
     } catch (error) {
       console.error('Failed to fetch products:', error)
