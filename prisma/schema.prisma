@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  phone     String?
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customers")
+}
+
+model Supplier {
+  id        String     @id @default(cuid())
+  name      String
+  email     String?    @unique
+  phone     String?
+  address   String?
+  purchases Purchase[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("suppliers")
+}
+
+model Product {
+  id             String         @id @default(cuid())
+  sku            String         @unique
+  name           String
+  unit           String
+  price          Decimal        @db.Numeric(12, 2)
+  reorderPoint   Int            @default(0)
+  isActive       Boolean        @default(true)
+  quantityOnHand Int            @default(0)
+  orderItems     OrderItem[]
+  purchaseItems  PurchaseItem[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("products")
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  CANCELED
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  customerId String
+  user       User?       @relation(fields: [userId], references: [id])
+  userId     String?
+  status     OrderStatus @default(DRAFT)
+  items      OrderItem[]
+  total      Decimal     @default(0) @db.Numeric(12, 2)
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  qty       Int
+  unitPrice Decimal @db.Numeric(12, 2)
+  subtotal  Decimal @db.Numeric(12, 2)
+
+  @@map("order_items")
+}
+
+model Purchase {
+  id         String         @id @default(cuid())
+  supplier   Supplier       @relation(fields: [supplierId], references: [id])
+  supplierId String
+  items      PurchaseItem[]
+  total      Decimal        @default(0) @db.Numeric(12, 2)
+  notes      String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id         String   @id @default(cuid())
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  purchaseId String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  qty        Int
+  unitCost   Decimal  @db.Numeric(12, 2)
+  subtotal   Decimal  @db.Numeric(12, 2)
+
+  @@map("purchase_items")
+}
