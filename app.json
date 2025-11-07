@@ -1,0 +1,6 @@
+{
+  "name": "BatterySOCMonitor",
+  "displayName": "Battery SOC Monitor",
+  "version": "1.0.0",
+  "description": "Real-time battery State of Charge monitoring with LSTM predictions"
+}
