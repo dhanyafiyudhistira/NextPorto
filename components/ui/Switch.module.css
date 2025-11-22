@@ -1,0 +1,38 @@
+.root {
+  width: 42px;
+  height: 24px;
+  background-color: var(--secondary);
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.root:hover {
+  background-color: var(--muted);
+}
+
+.root[data-state='checked'] {
+  background-color: var(--primary);
+}
+
+.root:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: var(--background);
+  border-radius: 9999px;
+  transition: transform 0.2s;
+  transform: translateX(2px);
+  will-change: transform;
+}
+
+.thumb[data-state='checked'] {
+  transform: translateX(20px);
+}
