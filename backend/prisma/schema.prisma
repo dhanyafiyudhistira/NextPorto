@@ -1,0 +1,133 @@
+// Prisma schema for NILM Federated Learning System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for basic authentication and data ownership
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  samples           TimeSeriesSample[]
+  applianceEstimates ApplianceEstimate[]
+  modelUpdates      ModelUpdate[]
+
+  @@map("users")
+}
+
+// Raw sensor data from REDD-like dataset
+model TimeSeriesSample {
+  id                     String   @id @default(uuid())
+  timestamp              DateTime @default(now())
+  main                   Float    // Main power consumption
+  dishWasher             Float    @default(0) @map("dish_washer")
+  electricSpaceHeater    Float    @default(0) @map("electric_space_heater")
+  electricStove          Float    @default(0) @map("electric_stove")
+  fridge                 Float    @default(0)
+  microwave              Float    @default(0)
+  washerDryer            Float    @default(0) @map("washer_dryer")
+
+  // Foreign key
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([userId, timestamp])
+  @@map("time_series_samples")
+}
+
+// NILM inference output per timestamp
+model ApplianceEstimate {
+  id                  String   @id @default(uuid())
+  timestamp           DateTime @default(now())
+
+  // Estimated power consumption for each appliance
+  dishWasherPower     Float    @default(0) @map("dish_washer_power")
+  spaceHeaterPower    Float    @default(0) @map("space_heater_power")
+  stovePower          Float    @default(0) @map("stove_power")
+  fridgePower         Float    @default(0) @map("fridge_power")
+  microwavePower      Float    @default(0) @map("microwave_power")
+  washerDryerPower    Float    @default(0) @map("washer_dryer_power")
+
+  // Total estimated vs actual main
+  totalEstimated      Float    @default(0) @map("total_estimated")
+  actualMain          Float    @default(0) @map("actual_main")
+
+  // Model version used for this inference
+  modelVersionId      String   @map("model_version_id")
+  modelVersion        ModelVersion @relation(fields: [modelVersionId], references: [id])
+
+  // Foreign key
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([userId, timestamp])
+  @@index([modelVersionId])
+  @@map("appliance_estimates")
+}
+
+// Current model metadata
+model ModelVersion {
+  id              String   @id @default(uuid())
+  version         Int      @unique @default(autoincrement())
+  type            String   @default("CNN-LSTM") // Model architecture type
+  weightsPath     String?  @map("weights_path") // Path to model weights file
+  accuracy        Float?   // Optional accuracy metric
+  loss            Float?   // Optional loss metric
+  roundId         Int      @default(0) @map("round_id") // Federated learning round
+  isGlobal        Boolean  @default(true) @map("is_global") // Is this a global model or local?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  applianceEstimates ApplianceEstimate[]
+  modelUpdates       ModelUpdate[]
+
+  @@index([version])
+  @@index([roundId])
+  @@map("model_versions")
+}
+
+// Federated client updates
+model ModelUpdate {
+  id                  String   @id @default(uuid())
+  clientId            String   @map("client_id") // Client identifier (userId or deviceId)
+  roundId             Int      @map("round_id") // Federated learning round number
+  numSamples          Int      @map("num_samples") // Number of training samples
+  deltaWeightsPath    String?  @map("delta_weights_path") // Path to weight updates
+  loss                Float?   // Training loss
+  accuracy            Float?   // Training accuracy
+  status              String   @default("pending") // pending, submitted, aggregated
+
+  // Model version this update contributes to
+  modelVersionId      String   @map("model_version_id")
+  modelVersion        ModelVersion @relation(fields: [modelVersionId], references: [id])
+
+  // Foreign key
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([clientId, roundId])
+  @@index([roundId])
+  @@index([modelVersionId])
+  @@map("model_updates")
+}

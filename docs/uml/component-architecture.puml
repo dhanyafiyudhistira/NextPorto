@@ -1,0 +1,107 @@
+@startuml
+title NILM Federated Learning - Component Architecture
+
+!define RECTANGLE class
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #FEFEFE
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+package "Frontend (Next.js)" {
+  [Dashboard UI] as Dashboard
+  [Gauge Components] as Gauges
+  [API Client] as FrontendAPI
+
+  Dashboard --> Gauges : renders
+  Dashboard --> FrontendAPI : uses
+}
+
+package "Backend API (Express + Node.js)" {
+  [API Gateway] as Gateway
+  [NILM Routes] as NILMRoutes
+  [Training Routes] as TrainingRoutes
+  [Logs Routes] as LogsRoutes
+
+  [NILM Service] as NILMService
+  [Training Service] as TrainingService
+  [Export Service] as ExportService
+  [FL Service Client] as FLClient
+
+  Gateway --> NILMRoutes
+  Gateway --> TrainingRoutes
+  Gateway --> LogsRoutes
+
+  NILMRoutes --> NILMService
+  TrainingRoutes --> TrainingService
+  LogsRoutes --> ExportService
+
+  NILMService --> FLClient
+  TrainingService --> FLClient
+}
+
+database "PostgreSQL" {
+  [Prisma ORM] as Prisma
+  [Time Series Samples] as Samples
+  [Appliance Estimates] as Estimates
+  [Model Versions] as Models
+  [Model Updates] as Updates
+  [Users] as Users
+
+  Prisma --> Samples
+  Prisma --> Estimates
+  Prisma --> Models
+  Prisma --> Updates
+  Prisma --> Users
+}
+
+package "FL Service (FastAPI + Python)" {
+  [FastAPI App] as FastAPI
+  [Inference Router] as InferenceRouter
+  [Federated Router] as FederatedRouter
+
+  [NILM Model] as NILMModel
+  [Federated Coordinator] as Coordinator
+
+  FastAPI --> InferenceRouter
+  FastAPI --> FederatedRouter
+
+  InferenceRouter --> NILMModel
+  FederatedRouter --> Coordinator
+}
+
+' Connections between layers
+FrontendAPI -down-> Gateway : REST/HTTP\n(port 3001)
+Gateway -down-> Prisma : ORM
+FLClient -down-> FastAPI : REST/HTTP\n(port 8000)
+
+note right of Dashboard
+  - Real-time gauge displays
+  - Auto-refresh telemetry
+  - Training controls
+  - CSV export
+end note
+
+note right of Prisma
+  - TimeSeriesSample
+  - ApplianceEstimate
+  - ModelVersion
+  - ModelUpdate
+  - User
+end note
+
+note right of NILMModel
+  Simulated CNN-LSTM model
+  for appliance disaggregation
+end note
+
+note right of Coordinator
+  FedAvg aggregation
+  Round management
+  Client coordination
+end note
+
+@enduml
