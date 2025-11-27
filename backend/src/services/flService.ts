@@ -58,6 +58,11 @@ export class FLService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('FL Service federated update error:', error.message);
+        console.error('Request payload:', JSON.stringify(update, null, 2));
+        if (error.response) {
+          console.error('Response status:', error.response.status);
+          console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+        }
         throw new Error(`FL Service federated update failed: ${error.message}`);
       }
       throw error;
