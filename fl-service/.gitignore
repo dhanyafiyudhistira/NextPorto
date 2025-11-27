@@ -38,8 +38,8 @@ wheels/
 .DS_Store
 Thumbs.db
 
-# Models
-models/
+# Model weight files (but not the app/models package directory)
+/models/
 *.pth
 *.pt
 *.h5
