@@ -1,0 +1,457 @@
+// Prisma Schema for SCADA DER System with Active Power Curtailment
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== ASSET MODELS ==========
+
+enum AssetType {
+  SENSOR
+  RTU
+  PLC
+  GATEWAY
+  DER
+  HISTORIAN
+  AI_ENGINE
+  COMMAND_EXECUTOR
+}
+
+enum AssetStatus {
+  ONLINE
+  OFFLINE
+  FAULT
+  MAINTENANCE
+}
+
+model Asset {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        AssetType
+  status      AssetStatus  @default(OFFLINE)
+  ipAddress   String?
+  port        Int?
+  location    String?
+  metadata    Json?        // Flexible field for asset-specific data
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  sensors     Sensor[]
+  rtus        Rtu[]
+  ders        Der[]
+  telemetry   Telemetry[]
+  alarms      Alarm[]
+  events      Event[]
+
+  @@index([type, status])
+}
+
+// ========== SENSOR MODELS ==========
+
+enum SensorType {
+  CT           // Current Transformer
+  VT           // Voltage Transformer
+  PMU          // Phasor Measurement Unit
+  ANALOG_4_20  // 4-20mA sensor
+  POWER_METER
+  MODBUS_METER
+  IEC61850
+}
+
+model Sensor {
+  id          String      @id @default(cuid())
+  assetId     String
+  asset       Asset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  name        String
+  type        SensorType
+  tagName     String      @unique  // SCADA tag identifier
+  unit        String      // kW, kV, A, etc.
+
+  // CT/VT specific
+  ratio       Float?      // CT ratio or VT ratio
+
+  // Scaling & calibration
+  minValue    Float?
+  maxValue    Float?
+  scaleFactor Float       @default(1.0)
+  offset      Float       @default(0.0)
+
+  // Communication
+  modbusAddress Int?
+  opcuaNodeId   String?
+  iec61850Path  String?
+
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  telemetry   Telemetry[]
+
+  @@index([tagName])
+  @@index([type])
+}
+
+// ========== RTU / PLC MODELS ==========
+
+enum RtuProtocol {
+  MODBUS_TCP
+  MODBUS_RTU
+  MQTT
+  OPC_UA
+  IEC61850
+  DNP3
+}
+
+model Rtu {
+  id            String       @id @default(cuid())
+  assetId       String
+  asset         Asset        @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  name          String
+  ipAddress     String
+  port          Int
+  protocol      RtuProtocol
+
+  pollInterval  Int          @default(1000)  // milliseconds
+  timeout       Int          @default(5000)
+
+  // Auth
+  username      String?
+  password      String?
+
+  // Status
+  isConnected   Boolean      @default(false)
+  lastPoll      DateTime?
+
+  metadata      Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([protocol])
+}
+
+// ========== DER MODELS ==========
+
+enum DerType {
+  PV          // Solar Photovoltaic
+  WIND        // Wind Turbine
+  BESS        // Battery Energy Storage System
+  GENSET      // Generator Set
+  FUEL_CELL
+}
+
+enum DerStatus {
+  ONLINE
+  OFFLINE
+  STANDBY
+  FAULT
+  CURTAILED
+}
+
+model Der {
+  id              String       @id @default(cuid())
+  assetId         String
+  asset           Asset        @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  name            String
+  type            DerType
+  status          DerStatus    @default(OFFLINE)
+
+  // Power ratings
+  pMax            Float        // Maximum power capacity (kW)
+  pActual         Float        @default(0)  // Current actual power output (kW)
+  qMax            Float?       // Reactive power max (kVAr)
+  qActual         Float        @default(0)
+
+  // Curtailment
+  curtailmentPercent Float     @default(0)  // 0-100%
+  isCurtailed     Boolean      @default(false)
+
+  // Control
+  isEnabled       Boolean      @default(true)
+  inverterAddress String?      // Modbus/OPC address for inverter control
+  breakerAddress  String?
+
+  // Location
+  substationId    String?
+  feederId        String?
+  busId           String?
+
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relations
+  commands        Command[]
+  optimizationResults AiOptimizationResult[]
+
+  @@index([type, status])
+}
+
+// ========== TELEMETRY & HISTORIAN ==========
+
+model Telemetry {
+  id          String      @id @default(cuid())
+  timestamp   DateTime    @default(now())
+
+  assetId     String
+  asset       Asset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  sensorId    String?
+  sensor      Sensor?     @relation(fields: [sensorId], references: [id], onDelete: SetNull)
+
+  tagName     String
+  value       Float
+  quality     String      @default("GOOD")  // GOOD, BAD, UNCERTAIN
+
+  metadata    Json?
+
+  @@index([timestamp])
+  @@index([tagName, timestamp])
+  @@index([assetId, timestamp])
+}
+
+model HistorianData {
+  id          String      @id @default(cuid())
+  timestamp   DateTime    @default(now())
+
+  tagName     String
+  value       Float
+  quality     String      @default("GOOD")
+
+  // Metrics
+  p           Float?      // Active Power (kW)
+  q           Float?      // Reactive Power (kVAr)
+  v           Float?      // Voltage (kV)
+  i           Float?      // Current (A)
+  loadingPercent Float?   // Line loading %
+
+  metadata    Json?
+
+  @@index([timestamp])
+  @@index([tagName, timestamp])
+}
+
+// ========== AI OPTIMIZATION ==========
+
+enum OptimizationMethod {
+  LINEAR_PROGRAMMING
+  DYNAMIC_PROGRAMMING
+  GENETIC_ALGORITHM
+  DEEP_RL
+  GRADIENT_DESCENT
+}
+
+enum OptimizationStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model AiOptimizationResult {
+  id              String              @id @default(cuid())
+  timestamp       DateTime            @default(now())
+
+  method          OptimizationMethod
+  status          OptimizationStatus  @default(PENDING)
+
+  // Input data snapshot
+  inputData       Json                // Voltage, loading, DER states
+
+  // Optimization objectives
+  objective       String              // e.g., "Minimize curtailment + Relieve congestion"
+  constraints     Json                // Voltage limits, thermal limits, etc.
+
+  // Results
+  recommendedCurtailment Json?        // { derId: curtailmentPercent }
+  expectedImprovement    Float?       // Expected improvement metric
+
+  // Metadata
+  executionTime   Int?                // milliseconds
+  iterations      Int?
+  convergence     Float?
+
+  appliedToField  Boolean             @default(false)
+  appliedAt       DateTime?
+
+  createdAt       DateTime            @default(now())
+
+  // Relations
+  ders            Der[]
+
+  @@index([timestamp])
+  @@index([status])
+}
+
+// ========== COMMANDS & CONTROL ==========
+
+enum CommandType {
+  INVERTER_SET_CURTAILMENT
+  INVERTER_SET_POWER
+  BREAKER_OPEN
+  BREAKER_CLOSE
+  DER_ENABLE
+  DER_DISABLE
+  SET_VOLTAGE
+  SET_FREQUENCY
+}
+
+enum CommandStatus {
+  QUEUED
+  SENT
+  ACKNOWLEDGED
+  EXECUTED
+  FAILED
+  TIMEOUT
+}
+
+model Command {
+  id          String         @id @default(cuid())
+  timestamp   DateTime       @default(now())
+
+  derId       String
+  der         Der            @relation(fields: [derId], references: [id], onDelete: Cascade)
+
+  type        CommandType
+  status      CommandStatus  @default(QUEUED)
+
+  // Command parameters
+  parameters  Json           // { curtailmentPercent: 50, power: 100, etc. }
+
+  // Translation to PLC/RTU
+  targetAddress String?      // Modbus register, OPC node, etc.
+  rawCommand    String?      // Actual protocol command
+
+  // Response
+  response      String?
+  errorMessage  String?
+
+  // Audit
+  issuedBy      String?
+  acknowledgedAt DateTime?
+  executedAt     DateTime?
+
+  createdAt     DateTime      @default(now())
+
+  @@index([derId, timestamp])
+  @@index([status])
+}
+
+// ========== ALARMS & EVENTS ==========
+
+enum AlarmSeverity {
+  INFO
+  WARNING
+  ALARM
+  CRITICAL
+}
+
+enum AlarmStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  CLEARED
+}
+
+model Alarm {
+  id          String         @id @default(cuid())
+  timestamp   DateTime       @default(now())
+
+  assetId     String?
+  asset       Asset?         @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  severity    AlarmSeverity
+  status      AlarmStatus    @default(ACTIVE)
+
+  title       String
+  message     String
+
+  // Alarm details
+  tagName     String?
+  value       Float?
+  threshold   Float?
+
+  // Resolution
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  clearedAt      DateTime?
+
+  metadata    Json?
+
+  @@index([timestamp])
+  @@index([severity, status])
+  @@index([assetId])
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  timestamp   DateTime    @default(now())
+
+  assetId     String?
+  asset       Asset?      @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  eventType   String      // e.g., "COMMAND_EXECUTED", "DER_STATUS_CHANGE", "OPTIMIZATION_APPLIED"
+  description String
+
+  // Before/After
+  stateBefore Json?
+  stateAfter  Json?
+
+  // Audit
+  userId      String?
+  userName    String?
+
+  metadata    Json?
+
+  @@index([timestamp])
+  @@index([eventType])
+}
+
+// ========== USER MANAGEMENT ==========
+
+enum UserRole {
+  OPERATOR    // View-only, basic control
+  ENGINEER    // Full control, configuration
+  ADMIN       // All permissions including user management
+}
+
+model User {
+  id          String      @id @default(cuid())
+  username    String      @unique
+  email       String      @unique
+  password    String      // Hashed
+
+  role        UserRole    @default(OPERATOR)
+
+  isActive    Boolean     @default(true)
+  lastLogin   DateTime?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([username])
+  @@index([role])
+}
+
+// ========== SYSTEM CONFIGURATION ==========
+
+model SystemConfig {
+  id          String      @id @default(cuid())
+  key         String      @unique
+  value       String
+  description String?
+
+  updatedBy   String?
+  updatedAt   DateTime    @updatedAt
+
+  @@index([key])
+}

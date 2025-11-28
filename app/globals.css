@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0e27;
+  --foreground: #e0f2fe;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+}
+
+/* SCADA Industrial Theme */
+.scada-panel {
+  @apply bg-scada-darker border border-scada-blue/30 rounded-lg p-4 shadow-lg;
+}
+
+.scada-button {
+  @apply px-4 py-2 bg-scada-blue/20 border border-scada-blue text-scada-blue
+         hover:bg-scada-blue hover:text-scada-darker transition-all duration-200
+         rounded font-semibold shadow-neon-sm hover:shadow-neon;
+}
+
+.scada-button-danger {
+  @apply px-4 py-2 bg-scada-red/20 border border-scada-red text-scada-red
+         hover:bg-scada-red hover:text-white transition-all duration-200
+         rounded font-semibold shadow-neon-sm hover:shadow-neon;
+}
+
+.scada-button-success {
+  @apply px-4 py-2 bg-scada-green/20 border border-scada-green text-scada-green
+         hover:bg-scada-green hover:text-scada-darker transition-all duration-200
+         rounded font-semibold shadow-neon-sm hover:shadow-neon;
+}
+
+.scada-input {
+  @apply bg-scada-darker border border-scada-blue/50 rounded px-3 py-2
+         text-scada-blue focus:outline-none focus:border-scada-blue
+         focus:shadow-neon-sm transition-all;
+}
+
+.scada-value {
+  @apply text-2xl font-bold text-scada-cyan;
+}
+
+.scada-label {
+  @apply text-xs uppercase tracking-wider text-scada-blue/70;
+}
+
+/* Status indicators */
+.status-online {
+  @apply text-scada-green;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.status-offline {
+  @apply text-gray-500;
+}
+
+.status-fault {
+  @apply text-scada-red;
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-curtailed {
+  @apply text-scada-yellow;
+}
+
+/* Alarm styles */
+.alarm-critical {
+  @apply bg-scada-red/20 border-scada-red text-scada-red;
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.alarm-warning {
+  @apply bg-scada-yellow/20 border-scada-yellow text-scada-yellow;
+}
+
+.alarm-info {
+  @apply bg-scada-blue/20 border-scada-blue text-scada-blue;
+}
+
+/* Neon effects */
+.neon-text {
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* Grid backgrounds */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  border: 2px solid rgba(0, 212, 255, 0.2);
+  border-top-color: #00d4ff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+/* Table styles */
+.scada-table {
+  @apply w-full border-collapse;
+}
+
+.scada-table thead {
+  @apply bg-scada-blue/10 border-b border-scada-blue/30;
+}
+
+.scada-table th {
+  @apply px-4 py-3 text-left text-xs font-semibold text-scada-blue uppercase tracking-wider;
+}
+
+.scada-table td {
+  @apply px-4 py-3 border-b border-scada-blue/10;
+}
+
+.scada-table tbody tr:hover {
+  @apply bg-scada-blue/5;
+}
