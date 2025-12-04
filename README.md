@@ -82,20 +82,32 @@ Replace:
 
 ### 5. Run Database Migrations
 
+**Note**: This project uses Prisma 7.x which has a new configuration format. The database URL is now passed directly to the PrismaClient constructor instead of being in the schema file.
+
 Generate Prisma client and create database tables:
 
 ```bash
 # Generate Prisma Client
 npx prisma generate
 
-# Run migrations (create tables)
-npx prisma migrate dev --name init
+# Create the database tables
+npx prisma db push
 ```
 
-If you encounter issues with Prisma binary downloads, you can use:
+If you encounter issues with Prisma binary downloads in restricted networks:
 
 ```bash
+# Try with checksum ignore
 PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
+
+# Or use db push instead of migrate
+PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push
+```
+
+For production, you may want to use traditional migrations:
+
+```bash
+npx prisma migrate dev --name init
 ```
 
 ### 6. Start Development Server
@@ -255,7 +267,14 @@ Output Layer:   10 neurons (Softmax activation)
 
 ## Database Schema
 
+This project uses **Prisma 7.x** with the new configuration format. Database connection is configured in `prisma/prisma.config.ts` and passed to the PrismaClient constructor.
+
+**Schema** (`prisma/schema.prisma`):
 ```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
 model Prediction {
   id             Int      @id @default(autoincrement())
   createdAt      DateTime @default(now())
@@ -265,6 +284,27 @@ model Prediction {
   activations    Json?    // Layer activations
   meta           Json?    // Request metadata
 }
+```
+
+**Configuration** (`prisma/prisma.config.ts`):
+```typescript
+import { defineConfig } from '@prisma/client';
+
+export default defineConfig({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+});
+```
+
+**Client Usage** (`src/lib/prisma.ts`):
+```typescript
+new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
+  log: ['query', 'error', 'warn'],
+});
 ```
 
 ## Available Scripts
@@ -280,10 +320,11 @@ npm start           # Start production server
 # Linting
 npm run lint        # Run ESLint
 
-# Database
-npx prisma generate  # Generate Prisma Client
-npx prisma migrate dev  # Run migrations
-npx prisma studio    # Open Prisma Studio (database GUI)
+# Database (Prisma 7.x)
+npx prisma generate     # Generate Prisma Client
+npx prisma db push      # Push schema to database (recommended for development)
+npx prisma migrate dev  # Create and apply migrations (for production)
+npx prisma studio       # Open Prisma Studio (database GUI)
 ```
 
 ## Troubleshooting
@@ -297,12 +338,25 @@ If you encounter database connection errors:
 3. Ensure the database exists: `psql -U postgres -l`
 4. Test connection: `psql -U postgres -d neural_net_db`
 
-### Prisma Binary Download Issues
+### Prisma 7.x Configuration Issues
 
-If Prisma can't download binaries (e.g., in restricted networks):
+This project uses Prisma 7.x with the new configuration format. If you see errors like "The datasource property `url` is no longer supported":
+
+1. Ensure you're using the correct schema format (no datasource block with url)
+2. The database URL is passed to PrismaClient via `datasourceUrl` parameter
+3. Configuration is in `prisma/prisma.config.ts`
+
+**Common Prisma 7 Issues:**
 
 ```bash
+# Error: P1012 - datasource url no longer supported
+# Solution: Update schema and client configuration as shown in this README
+
+# Binary download issues in restricted networks:
 PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
+
+# Use db push instead of migrate for development:
+npx prisma db push
 ```
 
 ### Port Already in Use
