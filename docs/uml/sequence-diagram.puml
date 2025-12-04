@@ -1,0 +1,138 @@
+@startuml
+title NILM Federated Learning - Sequence Diagram
+
+skinparam backgroundColor #FEFEFE
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  LifeLineBackgroundColor #FFFFFF
+  ParticipantBorderColor #333333
+  ParticipantBackgroundColor #FFFFFF
+}
+
+actor User
+participant "Frontend\n(Next.js)" as Frontend
+participant "Backend API\n(Express)" as Backend
+database "PostgreSQL\n(Prisma)" as DB
+participant "FL Service\n(FastAPI)" as FLService
+
+== Real-time Telemetry ==
+
+User -> Frontend: Open Dashboard
+activate Frontend
+
+loop Every 2 seconds
+  Frontend -> Backend: GET /api/nilm/sample
+  activate Backend
+
+  Backend -> Backend: Generate dummy sample
+  Backend -> DB: Store TimeSeriesSample
+  activate DB
+  DB --> Backend: Sample stored
+  deactivate DB
+
+  Backend --> Frontend: Return sample data
+  deactivate Backend
+
+  Frontend -> Frontend: Update gauges
+end
+
+== NILM Inference ==
+
+User -> Frontend: Click "Run NILM Inference"
+Frontend -> Backend: POST /api/nilm/infer
+activate Backend
+
+Backend -> DB: Get last 50 main power values
+activate DB
+DB --> Backend: Window of samples
+deactivate DB
+
+Backend -> FLService: POST /infer\n{window: [values]}
+activate FLService
+
+FLService -> FLService: Run NILM model\n(disaggregate appliances)
+
+FLService --> Backend: Appliance estimates
+deactivate FLService
+
+Backend -> DB: Store ApplianceEstimate
+activate DB
+DB --> Backend: Estimate stored
+deactivate DB
+
+Backend --> Frontend: Return estimate
+deactivate Backend
+
+Frontend -> Frontend: Display estimates\nin gauges
+deactivate Frontend
+
+== Federated Training ==
+
+User -> Frontend: Click "Start Local Training"
+activate Frontend
+
+Frontend -> Backend: POST /api/training/start
+activate Backend
+
+Backend -> DB: Get training samples
+activate DB
+DB --> Backend: 1000 samples
+deactivate DB
+
+Backend -> Backend: Simulate local training\n(5 epochs)
+
+loop Poll every 1 second
+  Frontend -> Backend: GET /api/training/status
+  Backend --> Frontend: {progress: X%, status: running}
+  Frontend -> Frontend: Update progress bar
+end
+
+Backend -> FLService: POST /federated/update\n{clientId, roundId, loss, accuracy}
+activate FLService
+
+FLService -> FLService: Aggregate updates\n(FedAvg)
+FLService -> FLService: Update global model
+
+FLService --> Backend: Global model metadata
+deactivate FLService
+
+Backend -> DB: Store ModelUpdate
+activate DB
+DB --> Backend: Update stored
+deactivate DB
+
+Backend -> DB: Create new ModelVersion
+activate DB
+DB --> Backend: Version stored
+deactivate DB
+
+Backend --> Frontend: Training complete
+deactivate Backend
+
+Frontend -> Frontend: Show completion status
+deactivate Frontend
+
+== CSV Export ==
+
+User -> Frontend: Click "Export Samples CSV"
+activate Frontend
+
+Frontend -> Backend: GET /api/logs/export?type=samples
+activate Backend
+
+Backend -> DB: Query TimeSeriesSample table
+activate DB
+DB --> Backend: All samples
+deactivate DB
+
+Backend -> Backend: Convert to CSV format
+
+Backend --> Frontend: CSV file download
+deactivate Backend
+
+Frontend -> User: Download CSV file
+deactivate Frontend
+
+@enduml

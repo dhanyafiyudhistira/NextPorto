@@ -1,0 +1,109 @@
+.barChartContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 2px solid #333;
+  border-radius: 8px;
+  min-width: 250px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.barChartLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chartArea {
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem 0;
+  border-bottom: 2px solid #333;
+  border-left: 2px solid #333;
+}
+
+.bar {
+  flex: 1;
+  background-color: #333;
+  margin: 0 2px;
+  position: relative;
+  transition: all 0.5s ease;
+  min-height: 2px;
+  max-width: 60px;
+  border-radius: 4px 4px 0 0;
+}
+
+.bar:hover {
+  background-color: #000;
+}
+
+.barValue {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.barLabel {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  transform-origin: center;
+  font-size: 0.7rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.chartValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.chartUnit {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}
+
+.legend {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.legendItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.legendItem:last-child {
+  border-bottom: none;
+}
+
+.legendLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.legendValue {
+  color: #000;
+  font-weight: 600;
+}

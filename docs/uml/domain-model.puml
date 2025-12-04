@@ -1,0 +1,133 @@
+@startuml
+title NILM Federated Learning - Domain Model
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+class User {
+  +id: UUID
+  +email: String
+  +name: String?
+  +createdAt: DateTime
+  +updatedAt: DateTime
+  --
+  Relations:
+  samples: TimeSeriesSample[]
+  applianceEstimates: ApplianceEstimate[]
+  modelUpdates: ModelUpdate[]
+}
+
+class TimeSeriesSample {
+  +id: UUID
+  +timestamp: DateTime
+  +main: Float
+  +dishWasher: Float
+  +electricSpaceHeater: Float
+  +electricStove: Float
+  +fridge: Float
+  +microwave: Float
+  +washerDryer: Float
+  +userId: UUID?
+  +createdAt: DateTime
+  --
+  Raw sensor data from
+  REDD-like dataset
+}
+
+class ApplianceEstimate {
+  +id: UUID
+  +timestamp: DateTime
+  +dishWasherPower: Float
+  +spaceHeaterPower: Float
+  +stovePower: Float
+  +fridgePower: Float
+  +microwavePower: Float
+  +washerDryerPower: Float
+  +totalEstimated: Float
+  +actualMain: Float
+  +modelVersionId: UUID
+  +userId: UUID?
+  +createdAt: DateTime
+  --
+  NILM inference results
+  for each appliance
+}
+
+class ModelVersion {
+  +id: UUID
+  +version: Int
+  +type: String
+  +weightsPath: String?
+  +accuracy: Float?
+  +loss: Float?
+  +roundId: Int
+  +isGlobal: Boolean
+  +createdAt: DateTime
+  +updatedAt: DateTime
+  --
+  Global or local model
+  metadata and metrics
+}
+
+class ModelUpdate {
+  +id: UUID
+  +clientId: String
+  +roundId: Int
+  +numSamples: Int
+  +deltaWeightsPath: String?
+  +loss: Float?
+  +accuracy: Float?
+  +status: String
+  +modelVersionId: UUID
+  +userId: UUID?
+  +createdAt: DateTime
+  +updatedAt: DateTime
+  --
+  Federated learning
+  client contributions
+}
+
+' Relationships
+User "1" -- "0..*" TimeSeriesSample : owns >
+User "1" -- "0..*" ApplianceEstimate : owns >
+User "1" -- "0..*" ModelUpdate : creates >
+
+ModelVersion "1" -- "0..*" ApplianceEstimate : used for >
+ModelVersion "1" -- "0..*" ModelUpdate : receives >
+
+note top of User
+  Basic authentication
+  and data ownership
+end note
+
+note right of TimeSeriesSample
+  Stores raw power consumption
+  readings from main line
+  and individual appliances
+end note
+
+note right of ApplianceEstimate
+  Output of NILM inference
+  Estimated power per appliance
+  from main power signal
+end note
+
+note bottom of ModelVersion
+  version: increments with each FL round
+  type: "CNN-LSTM" or other architectures
+  roundId: current federated round
+  isGlobal: distinguishes global vs local
+end note
+
+note bottom of ModelUpdate
+  Tracks individual client contributions
+  status: pending | submitted | aggregated
+  numSamples: training data size
+end note
+
+@enduml
