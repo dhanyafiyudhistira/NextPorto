@@ -1,0 +1,293 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 2rem;
+  background: white;
+  border-bottom: 3px solid #1e40af;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.navLink {
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  color: #1e40af;
+  border: 2px solid #1e40af;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.navLink:hover {
+  background: #1e40af;
+  color: white;
+  text-decoration: none;
+}
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem;
+}
+
+.filters {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #1e40af;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filtersTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filterLabel {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.filterSelect,
+.filterInput {
+  padding: 0.5rem;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.filterSelect:focus,
+.filterInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.exportButton {
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  background: #1e40af;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.exportButton:hover {
+  background: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f0f4ff;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.error {
+  padding: 1rem;
+  background: #fee;
+  border: 2px solid #f00;
+  border-radius: 6px;
+  color: #c00;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  padding: 3rem;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: #1e3a8a;
+  color: white;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table th {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr:hover {
+  background: #f0f4ff;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.digitCell {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.probabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.probability {
+  color: #374151;
+}
+
+.probability strong {
+  color: #1e40af;
+}
+
+.empty {
+  padding: 3rem;
+  text-align: center;
+  background: white;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
+.paginationButton {
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  background: #1e40af;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #3b82f6;
+}
+
+.paginationButton:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-weight: 600;
+  color: #374151;
+}
+
+.footer {
+  padding: 1.5rem;
+  background: white;
+  border-top: 2px solid #e5e7eb;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .filterGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .probabilities {
+    font-size: 0.75rem;
+  }
+}
