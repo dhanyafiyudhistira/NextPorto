@@ -1,0 +1,129 @@
+.container {
+  padding: 1.5rem;
+  background: white;
+  border: 2px solid #1e40af;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-align: center;
+}
+
+.placeholder {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.prediction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: #f0f4ff;
+  border-radius: 6px;
+  font-size: 1.125rem;
+}
+
+.predictionLabel {
+  color: #374151;
+  font-weight: 500;
+}
+
+.predictionValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.confidence {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.barLabel {
+  width: 30px;
+  flex-shrink: 0;
+}
+
+.digit {
+  font-weight: 600;
+  color: #1e3a8a;
+  font-size: 1.125rem;
+}
+
+.barTrack {
+  flex: 1;
+  height: 30px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.barFill {
+  height: 100%;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  transition: width 0.3s ease;
+  min-width: 0;
+}
+
+.barFillMax {
+  background: #1e40af;
+  font-weight: 700;
+}
+
+.barValue {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.smallValue {
+  font-size: 0.75rem;
+  color: #6b7280;
+  min-width: 45px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .prediction {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .barTrack {
+    height: 24px;
+  }
+
+  .barValue {
+    font-size: 0.75rem;
+  }
+}

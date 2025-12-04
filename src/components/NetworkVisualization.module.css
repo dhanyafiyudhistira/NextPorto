@@ -1,0 +1,119 @@
+.container {
+  padding: 1.5rem;
+  background: white;
+  border: 2px solid #1e40af;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-align: center;
+}
+
+.placeholder {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.architecture {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.layer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.layerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f0f4ff;
+  border-radius: 4px;
+}
+
+.layerName {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.layerSize {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.neurons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.neuron {
+  border-radius: 50%;
+  border: 2px solid;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.neuron:hover {
+  transform: scale(1.2);
+}
+
+.arrow {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #1e40af;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .neurons {
+    gap: 0.375rem;
+    padding: 0.75rem;
+  }
+}

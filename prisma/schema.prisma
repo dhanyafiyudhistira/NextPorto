@@ -1,0 +1,15 @@
+// Prisma schema for Neural Network Digit Recognition App
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Prediction {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  inputLabel     String?  // Optional true label if user provides
+  predictedDigit Int
+  probabilities  Json     // Store probabilities for digits 0-9
+  activations    Json?    // Optional: serialized activations per layer
+  meta           Json?    // e.g., client IP, browser info, scale factor, etc.
+}
