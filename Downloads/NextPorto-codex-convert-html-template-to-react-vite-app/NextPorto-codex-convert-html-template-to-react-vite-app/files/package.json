@@ -1,0 +1,13 @@
+{
+  "name": "scada-token-api",
+  "version": "1.0.0",
+  "description": "Token Manager API for Multi Fluid Transfer SCADA",
+  "main": "api/tokens.js",
+  "type": "module",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
